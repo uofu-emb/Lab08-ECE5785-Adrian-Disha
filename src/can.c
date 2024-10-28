@@ -2,6 +2,7 @@
 #include <hardware/regs/intctrl.h>
 #include <stdio.h>
 #include <pico/stdlib.h>
+#include <FreeRTOS.h>
 
 static struct can2040 cbus;
 
@@ -32,4 +33,14 @@ void canbus_setup(void)
 
     // Start canbus
     can2040_start(&cbus, sys_clock, bitrate, gpio_rx, gpio_tx);
+}
+
+
+void main()
+{
+    canbus_setup();
+
+    for(;;)
+    {
+    }
 }
