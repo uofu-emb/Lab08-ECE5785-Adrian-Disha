@@ -2174,7 +2174,7 @@
 					"value" : "No help, variable specified on the command line."
 				}
 			],
-			"type" : "UNINITIALIZED",
+			"type" : "STRING",
 			"value" : "/bin/python3"
 		},
 		{

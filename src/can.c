@@ -11,7 +11,8 @@ static QueueHandle_t msg_received;
 
 static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
 {
-    xQueueSend(msg_received, &(msg->data32[0]), portMAX_DELAY);
+    BaseType_t xHigherPriorityTaskWoken;    
+    xQueueSendFromISR(msg_received, &(msg->data32[0]), &xHigherPriorityTaskWoken);
 }
 
 static void PIOx_IRQHandler(void)
@@ -23,7 +24,7 @@ void canbus_setup(void)
 {
     uint32_t pio_num = 0;
     uint32_t sys_clock = 125000000, bitrate = 500000;
-    uint32_t gpio_rx = 4, gpio_tx = 5;
+    uint32_t gpio_rx = 6, gpio_tx = 7;
 
     // Setup canbus
     can2040_setup(&cbus, pio_num);
@@ -41,9 +42,10 @@ void canbus_setup(void)
 void receive_task(void* params)
 {
     uint8_t data = 0;
-    while(xQueueReceive(msg_received, &data, portMAX_DELAY))
+    while(1)
     {
-        printf("Data Received: %u", data);
+        xQueueReceive(msg_received, &data, portMAX_DELAY);
+        printf("Data Received: %u\n", data);
     }
 }
 
@@ -52,7 +54,7 @@ void transmit_task(void* params)
     // Setup to Transmit
     uint32_t count = 0;
     struct can2040_msg msg;
-    msg.id = 0;
+    msg.id = 1;
     msg.dlc = 8;
 
     int status = 0;
@@ -79,8 +81,8 @@ void main()
 
     msg_received = xQueueCreate(20, sizeof(uint32_t));
 
-    xTaskCreate(transmit_task, "Transmit Task",
-                configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1UL, NULL);
+    // xTaskCreate(transmit_task, "Transmit Task",
+    //             configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1UL, NULL);
     xTaskCreate(receive_task, "Receive Task",
                 configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1UL, NULL);
     vTaskStartScheduler();
