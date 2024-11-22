@@ -41,7 +41,7 @@ void canbus_setup(void)
 
 void receive_task(void* params)
 {
-    uint8_t data = 0;
+    uint32_t data = 0;
     while(1)
     {
         xQueueReceive(msg_received, &data, portMAX_DELAY);
@@ -54,14 +54,14 @@ void transmit_task(void* params)
     // Setup to Transmit
     uint32_t count = 0;
     struct can2040_msg msg;
-    msg.id = 1;
+    msg.id = 5;
     msg.dlc = 8;
 
     int status = 0;
 
     while(1)
     {
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(100));
 
         msg.data32[0] = count;
         msg.data32[1] = 0;
@@ -81,8 +81,8 @@ void main()
 
     msg_received = xQueueCreate(20, sizeof(uint32_t));
 
-    // xTaskCreate(transmit_task, "Transmit Task",
-    //             configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1UL, NULL);
+    xTaskCreate(transmit_task, "Transmit Task",
+                configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1UL, NULL);
     xTaskCreate(receive_task, "Receive Task",
                 configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1UL, NULL);
     vTaskStartScheduler();
