@@ -1,0 +1,12 @@
+[submodule "lib/unity"]
+	path = lib/unity
+	url = https://github.com/ThrowTheSwitch/Unity.git
+[submodule "lib/can2040"]
+	path = lib/can2040
+	url = https://github.com/uofu-emb/can2040.git
+[submodule "lib/FreeRTOS"]
+	path = lib/FreeRTOS
+	url = https://github.com/FreeRTOS/FreeRTOS-Kernel.git
+[submodule "lib/freertos"]
+	path = lib/freertos
+	url = https://github.com/FreeRTOS/FreeRTOS-Kernel.git
